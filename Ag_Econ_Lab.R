@@ -139,3 +139,32 @@ reg4 <- lm(error ~ lag_error, data = error_df)
 
 # Display regression results
 summary(reg4)
+
+# Estimate linear regression model
+reg1 <- lm(corn_price ~ SUR, data = WASDE)
+
+tbl_regression(reg1, intercept = TRUE) %>%
+  add_glance_source_note(include = c(r.squared, nobs))
+
+# Create inverse of stock-to-use ratio
+WASDE$SUR_Inv <- 1 / WASDE$SUR
+
+# Estimate regression model with 1/SUR as predictor
+reg_inv <- lm(corn_price ~ SUR_Inv, data = WASDE)
+
+# Display regression results using gtsummary
+tbl_regression(reg_inv, intercept = TRUE) %>%
+  add_glance_source_note(include = c(r.squared, nobs))
+
+# Create a character variable denoting the two time periods
+WASDE$period <- ifelse(WASDE$year >= 2006, "2006–2019", "1973–2005")
+WASDE$P2006 <- as.numeric(WASDE$year >= 2006) # P2006 is the dummy variable
+
+# Run a linear regression with time period specific
+reg3 <- lm(corn_price ~ SUR + P2006 + SUR:P2006, data=WASDE)
+
+# Display regression results
+summary(reg3)
+
+
+
